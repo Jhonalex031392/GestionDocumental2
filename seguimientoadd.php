@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg10.php" ?>
 <?php include_once "ewmysql10.php" ?>
 <?php include_once "phpfn10.php" ?>
-<?php include_once "cityinfo.php" ?>
+<?php include_once "seguimientoinfo.php" ?>
 <?php include_once "usuariosinfo.php" ?>
 <?php include_once "userfn10.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$city_add = NULL; // Initialize page object first
+$seguimiento_add = NULL; // Initialize page object first
 
-class ccity_add extends ccity {
+class cseguimiento_add extends cseguimiento {
 
 	// Page ID
 	var $PageID = 'add';
@@ -25,10 +25,10 @@ class ccity_add extends ccity {
 	var $ProjectID = "{D74DC9FA-763C-48C4-880F-6C317035A0C2}";
 
 	// Table name
-	var $TableName = 'city';
+	var $TableName = 'seguimiento';
 
 	// Page object name
-	var $PageObjName = 'city_add';
+	var $PageObjName = 'seguimiento_add';
 
 	// Page name
 	function PageName() {
@@ -171,10 +171,10 @@ class ccity_add extends ccity {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (city)
-		if (!isset($GLOBALS["city"])) {
-			$GLOBALS["city"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["city"];
+		// Table object (seguimiento)
+		if (!isset($GLOBALS["seguimiento"])) {
+			$GLOBALS["seguimiento"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["seguimiento"];
 		}
 
 		// Table object (usuarios)
@@ -186,7 +186,7 @@ class ccity_add extends ccity {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'city', TRUE);
+			define("EW_TABLE_NAME", 'seguimiento', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"])) $GLOBALS["gTimer"] = new cTimer();
@@ -265,25 +265,11 @@ class ccity_add extends ccity {
 
 			// Load key values from QueryString
 			$this->CopyRecord = TRUE;
-			if (@$_GET["Name"] != "") {
-				$this->Name->setQueryStringValue($_GET["Name"]);
-				$this->setKey("Name", $this->Name->CurrentValue); // Set up key
+			if (@$_GET["numero"] != "") {
+				$this->numero->setQueryStringValue($_GET["numero"]);
+				$this->setKey("numero", $this->numero->CurrentValue); // Set up key
 			} else {
-				$this->setKey("Name", ""); // Clear key
-				$this->CopyRecord = FALSE;
-			}
-			if (@$_GET["Country"] != "") {
-				$this->Country->setQueryStringValue($_GET["Country"]);
-				$this->setKey("Country", $this->Country->CurrentValue); // Set up key
-			} else {
-				$this->setKey("Country", ""); // Clear key
-				$this->CopyRecord = FALSE;
-			}
-			if (@$_GET["Province"] != "") {
-				$this->Province->setQueryStringValue($_GET["Province"]);
-				$this->setKey("Province", $this->Province->CurrentValue); // Set up key
-			} else {
-				$this->setKey("Province", ""); // Clear key
+				$this->setKey("numero", ""); // Clear key
 				$this->CopyRecord = FALSE;
 			}
 			if ($this->CopyRecord) {
@@ -314,7 +300,7 @@ class ccity_add extends ccity {
 			case "C": // Copy an existing record
 				if (!$this->LoadRow()) { // Load record based on key
 					if ($this->getFailureMessage() == "") $this->setFailureMessage($Language->Phrase("NoRecord")); // No record found
-					$this->Page_Terminate("citylist.php"); // No matching record, return to list
+					$this->Page_Terminate("seguimientolist.php"); // No matching record, return to list
 				}
 				break;
 			case "A": // Add new record
@@ -323,7 +309,7 @@ class ccity_add extends ccity {
 					if ($this->getSuccessMessage() == "")
 						$this->setSuccessMessage($Language->Phrase("AddSuccess")); // Set up success message
 					$sReturnUrl = $this->getReturnUrl();
-					if (ew_GetPageName($sReturnUrl) == "cityview.php")
+					if (ew_GetPageName($sReturnUrl) == "seguimientoview.php")
 						$sReturnUrl = $this->GetViewUrl(); // View paging, return to view page with keyurl directly
 					$this->Page_Terminate($sReturnUrl); // Clean up and return
 				} else {
@@ -349,12 +335,14 @@ class ccity_add extends ccity {
 
 	// Load default values
 	function LoadDefaultValues() {
-		$this->Name->CurrentValue = NULL;
-		$this->Name->OldValue = $this->Name->CurrentValue;
-		$this->Country->CurrentValue = NULL;
-		$this->Country->OldValue = $this->Country->CurrentValue;
-		$this->Province->CurrentValue = NULL;
-		$this->Province->OldValue = $this->Province->CurrentValue;
+		$this->radicado->CurrentValue = NULL;
+		$this->radicado->OldValue = $this->radicado->CurrentValue;
+		$this->fecha->CurrentValue = NULL;
+		$this->fecha->OldValue = $this->fecha->CurrentValue;
+		$this->hora->CurrentValue = NULL;
+		$this->hora->OldValue = $this->hora->CurrentValue;
+		$this->dependencia->CurrentValue = NULL;
+		$this->dependencia->OldValue = $this->dependencia->CurrentValue;
 	}
 
 	// Load form values
@@ -362,14 +350,18 @@ class ccity_add extends ccity {
 
 		// Load from form
 		global $objForm;
-		if (!$this->Name->FldIsDetailKey) {
-			$this->Name->setFormValue($objForm->GetValue("x_Name"));
+		if (!$this->radicado->FldIsDetailKey) {
+			$this->radicado->setFormValue($objForm->GetValue("x_radicado"));
 		}
-		if (!$this->Country->FldIsDetailKey) {
-			$this->Country->setFormValue($objForm->GetValue("x_Country"));
+		if (!$this->fecha->FldIsDetailKey) {
+			$this->fecha->setFormValue($objForm->GetValue("x_fecha"));
+			$this->fecha->CurrentValue = ew_UnFormatDateTime($this->fecha->CurrentValue, 5);
 		}
-		if (!$this->Province->FldIsDetailKey) {
-			$this->Province->setFormValue($objForm->GetValue("x_Province"));
+		if (!$this->hora->FldIsDetailKey) {
+			$this->hora->setFormValue($objForm->GetValue("x_hora"));
+		}
+		if (!$this->dependencia->FldIsDetailKey) {
+			$this->dependencia->setFormValue($objForm->GetValue("x_dependencia"));
 		}
 	}
 
@@ -377,9 +369,11 @@ class ccity_add extends ccity {
 	function RestoreFormValues() {
 		global $objForm;
 		$this->LoadOldRecord();
-		$this->Name->CurrentValue = $this->Name->FormValue;
-		$this->Country->CurrentValue = $this->Country->FormValue;
-		$this->Province->CurrentValue = $this->Province->FormValue;
+		$this->radicado->CurrentValue = $this->radicado->FormValue;
+		$this->fecha->CurrentValue = $this->fecha->FormValue;
+		$this->fecha->CurrentValue = ew_UnFormatDateTime($this->fecha->CurrentValue, 5);
+		$this->hora->CurrentValue = $this->hora->FormValue;
+		$this->dependencia->CurrentValue = $this->dependencia->FormValue;
 	}
 
 	// Load row based on key values
@@ -411,18 +405,22 @@ class ccity_add extends ccity {
 		// Call Row Selected event
 		$row = &$rs->fields;
 		$this->Row_Selected($row);
-		$this->Name->setDbValue($rs->fields('Name'));
-		$this->Country->setDbValue($rs->fields('Country'));
-		$this->Province->setDbValue($rs->fields('Province'));
+		$this->numero->setDbValue($rs->fields('numero'));
+		$this->radicado->setDbValue($rs->fields('radicado'));
+		$this->fecha->setDbValue($rs->fields('fecha'));
+		$this->hora->setDbValue($rs->fields('hora'));
+		$this->dependencia->setDbValue($rs->fields('dependencia'));
 	}
 
 	// Load DbValue from recordset
 	function LoadDbValues(&$rs) {
 		if (!$rs || !is_array($rs) && $rs->EOF) return;
 		$row = is_array($rs) ? $rs : $rs->fields;
-		$this->Name->DbValue = $row['Name'];
-		$this->Country->DbValue = $row['Country'];
-		$this->Province->DbValue = $row['Province'];
+		$this->numero->DbValue = $row['numero'];
+		$this->radicado->DbValue = $row['radicado'];
+		$this->fecha->DbValue = $row['fecha'];
+		$this->hora->DbValue = $row['hora'];
+		$this->dependencia->DbValue = $row['dependencia'];
 	}
 
 	// Load old record
@@ -430,16 +428,8 @@ class ccity_add extends ccity {
 
 		// Load key values from Session
 		$bValidKey = TRUE;
-		if (strval($this->getKey("Name")) <> "")
-			$this->Name->CurrentValue = $this->getKey("Name"); // Name
-		else
-			$bValidKey = FALSE;
-		if (strval($this->getKey("Country")) <> "")
-			$this->Country->CurrentValue = $this->getKey("Country"); // Country
-		else
-			$bValidKey = FALSE;
-		if (strval($this->getKey("Province")) <> "")
-			$this->Province->CurrentValue = $this->getKey("Province"); // Province
+		if (strval($this->getKey("numero")) <> "")
+			$this->numero->CurrentValue = $this->getKey("numero"); // numero
 		else
 			$bValidKey = FALSE;
 
@@ -466,65 +456,89 @@ class ccity_add extends ccity {
 		$this->Row_Rendering();
 
 		// Common render codes for all row types
-		// Name
-		// Country
-		// Province
+		// numero
+		// radicado
+		// fecha
+		// hora
+		// dependencia
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
-			// Name
-			$this->Name->ViewValue = $this->Name->CurrentValue;
-			$this->Name->ViewCustomAttributes = "";
+			// numero
+			$this->numero->ViewValue = $this->numero->CurrentValue;
+			$this->numero->ViewCustomAttributes = "";
 
-			// Country
-			$this->Country->ViewValue = $this->Country->CurrentValue;
-			$this->Country->ViewCustomAttributes = "";
+			// radicado
+			$this->radicado->ViewValue = $this->radicado->CurrentValue;
+			$this->radicado->ViewCustomAttributes = "";
 
-			// Province
-			$this->Province->ViewValue = $this->Province->CurrentValue;
-			$this->Province->ViewCustomAttributes = "";
+			// fecha
+			$this->fecha->ViewValue = $this->fecha->CurrentValue;
+			$this->fecha->ViewValue = ew_FormatDateTime($this->fecha->ViewValue, 5);
+			$this->fecha->ViewCustomAttributes = "";
 
-			// Name
-			$this->Name->LinkCustomAttributes = "";
-			$this->Name->HrefValue = "";
-			$this->Name->TooltipValue = "";
+			// hora
+			$this->hora->ViewValue = $this->hora->CurrentValue;
+			$this->hora->ViewCustomAttributes = "";
 
-			// Country
-			$this->Country->LinkCustomAttributes = "";
-			$this->Country->HrefValue = "";
-			$this->Country->TooltipValue = "";
+			// dependencia
+			$this->dependencia->ViewValue = $this->dependencia->CurrentValue;
+			$this->dependencia->ViewCustomAttributes = "";
 
-			// Province
-			$this->Province->LinkCustomAttributes = "";
-			$this->Province->HrefValue = "";
-			$this->Province->TooltipValue = "";
+			// radicado
+			$this->radicado->LinkCustomAttributes = "";
+			$this->radicado->HrefValue = "";
+			$this->radicado->TooltipValue = "";
+
+			// fecha
+			$this->fecha->LinkCustomAttributes = "";
+			$this->fecha->HrefValue = "";
+			$this->fecha->TooltipValue = "";
+
+			// hora
+			$this->hora->LinkCustomAttributes = "";
+			$this->hora->HrefValue = "";
+			$this->hora->TooltipValue = "";
+
+			// dependencia
+			$this->dependencia->LinkCustomAttributes = "";
+			$this->dependencia->HrefValue = "";
+			$this->dependencia->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_ADD) { // Add row
 
-			// Name
-			$this->Name->EditCustomAttributes = "";
-			$this->Name->EditValue = ew_HtmlEncode($this->Name->CurrentValue);
-			$this->Name->PlaceHolder = ew_HtmlEncode(ew_RemoveHtml($this->Name->FldCaption()));
+			// radicado
+			$this->radicado->EditCustomAttributes = "";
+			$this->radicado->EditValue = ew_HtmlEncode($this->radicado->CurrentValue);
+			$this->radicado->PlaceHolder = ew_HtmlEncode(ew_RemoveHtml($this->radicado->FldCaption()));
 
-			// Country
-			$this->Country->EditCustomAttributes = "";
-			$this->Country->EditValue = ew_HtmlEncode($this->Country->CurrentValue);
-			$this->Country->PlaceHolder = ew_HtmlEncode(ew_RemoveHtml($this->Country->FldCaption()));
+			// fecha
+			$this->fecha->EditCustomAttributes = "";
+			$this->fecha->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->fecha->CurrentValue, 5));
+			$this->fecha->PlaceHolder = ew_HtmlEncode(ew_RemoveHtml($this->fecha->FldCaption()));
 
-			// Province
-			$this->Province->EditCustomAttributes = "";
-			$this->Province->EditValue = ew_HtmlEncode($this->Province->CurrentValue);
-			$this->Province->PlaceHolder = ew_HtmlEncode(ew_RemoveHtml($this->Province->FldCaption()));
+			// hora
+			$this->hora->EditCustomAttributes = "";
+			$this->hora->EditValue = ew_HtmlEncode($this->hora->CurrentValue);
+			$this->hora->PlaceHolder = ew_HtmlEncode(ew_RemoveHtml($this->hora->FldCaption()));
+
+			// dependencia
+			$this->dependencia->EditCustomAttributes = "";
+			$this->dependencia->EditValue = ew_HtmlEncode($this->dependencia->CurrentValue);
+			$this->dependencia->PlaceHolder = ew_HtmlEncode(ew_RemoveHtml($this->dependencia->FldCaption()));
 
 			// Edit refer script
-			// Name
+			// radicado
 
-			$this->Name->HrefValue = "";
+			$this->radicado->HrefValue = "";
 
-			// Country
-			$this->Country->HrefValue = "";
+			// fecha
+			$this->fecha->HrefValue = "";
 
-			// Province
-			$this->Province->HrefValue = "";
+			// hora
+			$this->hora->HrefValue = "";
+
+			// dependencia
+			$this->dependencia->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD ||
 			$this->RowType == EW_ROWTYPE_EDIT ||
@@ -547,14 +561,11 @@ class ccity_add extends ccity {
 		// Check if validation required
 		if (!EW_SERVER_VALIDATE)
 			return ($gsFormError == "");
-		if (!$this->Name->FldIsDetailKey && !is_null($this->Name->FormValue) && $this->Name->FormValue == "") {
-			ew_AddMessage($gsFormError, $Language->Phrase("EnterRequiredField") . " - " . $this->Name->FldCaption());
+		if (!ew_CheckDate($this->fecha->FormValue)) {
+			ew_AddMessage($gsFormError, $this->fecha->FldErrMsg());
 		}
-		if (!$this->Country->FldIsDetailKey && !is_null($this->Country->FormValue) && $this->Country->FormValue == "") {
-			ew_AddMessage($gsFormError, $Language->Phrase("EnterRequiredField") . " - " . $this->Country->FldCaption());
-		}
-		if (!$this->Province->FldIsDetailKey && !is_null($this->Province->FormValue) && $this->Province->FormValue == "") {
-			ew_AddMessage($gsFormError, $Language->Phrase("EnterRequiredField") . " - " . $this->Province->FldCaption());
+		if (!ew_CheckTime($this->hora->FormValue)) {
+			ew_AddMessage($gsFormError, $this->hora->FldErrMsg());
 		}
 
 		// Return validate result
@@ -579,48 +590,21 @@ class ccity_add extends ccity {
 		}
 		$rsnew = array();
 
-		// Name
-		$this->Name->SetDbValueDef($rsnew, $this->Name->CurrentValue, "", FALSE);
+		// radicado
+		$this->radicado->SetDbValueDef($rsnew, $this->radicado->CurrentValue, NULL, FALSE);
 
-		// Country
-		$this->Country->SetDbValueDef($rsnew, $this->Country->CurrentValue, "", FALSE);
+		// fecha
+		$this->fecha->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->fecha->CurrentValue, 5), NULL, FALSE);
 
-		// Province
-		$this->Province->SetDbValueDef($rsnew, $this->Province->CurrentValue, "", FALSE);
+		// hora
+		$this->hora->SetDbValueDef($rsnew, $this->hora->CurrentValue, NULL, FALSE);
+
+		// dependencia
+		$this->dependencia->SetDbValueDef($rsnew, $this->dependencia->CurrentValue, NULL, FALSE);
 
 		// Call Row Inserting event
 		$rs = ($rsold == NULL) ? NULL : $rsold->fields;
 		$bInsertRow = $this->Row_Inserting($rs, $rsnew);
-
-		// Check if key value entered
-		if ($bInsertRow && $this->ValidateKey && $this->Name->CurrentValue == "" && $this->Name->getSessionValue() == "") {
-			$this->setFailureMessage($Language->Phrase("InvalidKeyValue"));
-			$bInsertRow = FALSE;
-		}
-
-		// Check if key value entered
-		if ($bInsertRow && $this->ValidateKey && $this->Country->CurrentValue == "" && $this->Country->getSessionValue() == "") {
-			$this->setFailureMessage($Language->Phrase("InvalidKeyValue"));
-			$bInsertRow = FALSE;
-		}
-
-		// Check if key value entered
-		if ($bInsertRow && $this->ValidateKey && $this->Province->CurrentValue == "" && $this->Province->getSessionValue() == "") {
-			$this->setFailureMessage($Language->Phrase("InvalidKeyValue"));
-			$bInsertRow = FALSE;
-		}
-
-		// Check for duplicate key
-		if ($bInsertRow && $this->ValidateKey) {
-			$sFilter = $this->KeyFilter();
-			$rsChk = $this->LoadRs($sFilter);
-			if ($rsChk && !$rsChk->EOF) {
-				$sKeyErrMsg = str_replace("%f", $sFilter, $Language->Phrase("DupKey"));
-				$this->setFailureMessage($sKeyErrMsg);
-				$rsChk->Close();
-				$bInsertRow = FALSE;
-			}
-		}
 		if ($bInsertRow) {
 			$conn->raiseErrorFn = 'ew_ErrorFn';
 			$AddRow = $this->Insert($rsnew);
@@ -642,6 +626,8 @@ class ccity_add extends ccity {
 
 		// Get insert id if necessary
 		if ($AddRow) {
+			$this->numero->setDbValue($conn->Insert_ID());
+			$rsnew['numero'] = $this->numero->DbValue;
 		}
 		if ($AddRow) {
 
@@ -657,7 +643,7 @@ class ccity_add extends ccity {
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new cBreadcrumb();
 		$PageCaption = $this->TableCaption();
-		$Breadcrumb->Add("list", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", "citylist.php", $this->TableVar);
+		$Breadcrumb->Add("list", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", "seguimientolist.php", $this->TableVar);
 		$PageCaption = ($this->CurrentAction == "C") ? $Language->Phrase("Copy") : $Language->Phrase("Add");
 		$Breadcrumb->Add("add", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", ew_CurrentUrl(), $this->TableVar);
 	}
@@ -734,33 +720,33 @@ class ccity_add extends ccity {
 <?php
 
 // Create page object
-if (!isset($city_add)) $city_add = new ccity_add();
+if (!isset($seguimiento_add)) $seguimiento_add = new cseguimiento_add();
 
 // Page init
-$city_add->Page_Init();
+$seguimiento_add->Page_Init();
 
 // Page main
-$city_add->Page_Main();
+$seguimiento_add->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$city_add->Page_Render();
+$seguimiento_add->Page_Render();
 ?>
 <?php include_once "header.php" ?>
 <script type="text/javascript">
 
 // Page object
-var city_add = new ew_Page("city_add");
-city_add.PageID = "add"; // Page ID
-var EW_PAGE_ID = city_add.PageID; // For backward compatibility
+var seguimiento_add = new ew_Page("seguimiento_add");
+seguimiento_add.PageID = "add"; // Page ID
+var EW_PAGE_ID = seguimiento_add.PageID; // For backward compatibility
 
 // Form object
-var fcityadd = new ew_Form("fcityadd");
+var fseguimientoadd = new ew_Form("fseguimientoadd");
 
 // Validate form
-fcityadd.Validate = function() {
+fseguimientoadd.Validate = function() {
 	if (!this.ValidateRequired)
 		return true; // Ignore validation
 	var $ = jQuery, fobj = this.GetForm(), $fobj = $(fobj);
@@ -775,15 +761,12 @@ fcityadd.Validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
-			elm = this.GetElements("x" + infix + "_Name");
-			if (elm && !ew_HasValue(elm))
-				return this.OnError(elm, ewLanguage.Phrase("EnterRequiredField") + " - <?php echo ew_JsEncode2($city->Name->FldCaption()) ?>");
-			elm = this.GetElements("x" + infix + "_Country");
-			if (elm && !ew_HasValue(elm))
-				return this.OnError(elm, ewLanguage.Phrase("EnterRequiredField") + " - <?php echo ew_JsEncode2($city->Country->FldCaption()) ?>");
-			elm = this.GetElements("x" + infix + "_Province");
-			if (elm && !ew_HasValue(elm))
-				return this.OnError(elm, ewLanguage.Phrase("EnterRequiredField") + " - <?php echo ew_JsEncode2($city->Province->FldCaption()) ?>");
+			elm = this.GetElements("x" + infix + "_fecha");
+			if (elm && !ew_CheckDate(elm.value))
+				return this.OnError(elm, "<?php echo ew_JsEncode2($seguimiento->fecha->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_hora");
+			if (elm && !ew_CheckTime(elm.value))
+				return this.OnError(elm, "<?php echo ew_JsEncode2($seguimiento->hora->FldErrMsg()) ?>");
 
 			// Set up row object
 			ew_ElementsToRow(fobj);
@@ -805,7 +788,7 @@ fcityadd.Validate = function() {
 }
 
 // Form_CustomValidate event
-fcityadd.Form_CustomValidate = 
+fseguimientoadd.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid. 
@@ -814,9 +797,9 @@ fcityadd.Form_CustomValidate =
 
 // Use JavaScript validation or not
 <?php if (EW_CLIENT_VALIDATE) { ?>
-fcityadd.ValidateRequired = true;
+fseguimientoadd.ValidateRequired = true;
 <?php } else { ?>
-fcityadd.ValidateRequired = false; 
+fseguimientoadd.ValidateRequired = false; 
 <?php } ?>
 
 // Dynamic selection lists
@@ -828,37 +811,45 @@ fcityadd.ValidateRequired = false;
 // Write your client script here, no need to add script tags.
 </script>
 <?php $Breadcrumb->Render(); ?>
-<?php $city_add->ShowPageHeader(); ?>
+<?php $seguimiento_add->ShowPageHeader(); ?>
 <?php
-$city_add->ShowMessage();
+$seguimiento_add->ShowMessage();
 ?>
-<form name="fcityadd" id="fcityadd" class="ewForm form-horizontal" action="<?php echo ew_CurrentPage() ?>" method="post">
-<input type="hidden" name="t" value="city">
+<form name="fseguimientoadd" id="fseguimientoadd" class="ewForm form-horizontal" action="<?php echo ew_CurrentPage() ?>" method="post">
+<input type="hidden" name="t" value="seguimiento">
 <input type="hidden" name="a_add" id="a_add" value="A">
 <table cellspacing="0" class="ewGrid"><tr><td>
-<table id="tbl_cityadd" class="table table-bordered table-striped">
-<?php if ($city->Name->Visible) { // Name ?>
-	<tr id="r_Name"<?php echo $city->RowAttributes() ?>>
-		<td><span id="elh_city_Name"><?php echo $city->Name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></span></td>
-		<td<?php echo $city->Name->CellAttributes() ?>><span id="el_city_Name" class="control-group">
-<input type="text" data-field="x_Name" name="x_Name" id="x_Name" size="30" maxlength="35" placeholder="<?php echo $city->Name->PlaceHolder ?>" value="<?php echo $city->Name->EditValue ?>"<?php echo $city->Name->EditAttributes() ?>>
-</span><?php echo $city->Name->CustomMsg ?></td>
+<table id="tbl_seguimientoadd" class="table table-bordered table-striped">
+<?php if ($seguimiento->radicado->Visible) { // radicado ?>
+	<tr id="r_radicado"<?php echo $seguimiento->RowAttributes() ?>>
+		<td><span id="elh_seguimiento_radicado"><?php echo $seguimiento->radicado->FldCaption() ?></span></td>
+		<td<?php echo $seguimiento->radicado->CellAttributes() ?>><span id="el_seguimiento_radicado" class="control-group">
+<input type="text" data-field="x_radicado" name="x_radicado" id="x_radicado" size="30" maxlength="45" placeholder="<?php echo $seguimiento->radicado->PlaceHolder ?>" value="<?php echo $seguimiento->radicado->EditValue ?>"<?php echo $seguimiento->radicado->EditAttributes() ?>>
+</span><?php echo $seguimiento->radicado->CustomMsg ?></td>
 	</tr>
 <?php } ?>
-<?php if ($city->Country->Visible) { // Country ?>
-	<tr id="r_Country"<?php echo $city->RowAttributes() ?>>
-		<td><span id="elh_city_Country"><?php echo $city->Country->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></span></td>
-		<td<?php echo $city->Country->CellAttributes() ?>><span id="el_city_Country" class="control-group">
-<input type="text" data-field="x_Country" name="x_Country" id="x_Country" size="30" maxlength="4" placeholder="<?php echo $city->Country->PlaceHolder ?>" value="<?php echo $city->Country->EditValue ?>"<?php echo $city->Country->EditAttributes() ?>>
-</span><?php echo $city->Country->CustomMsg ?></td>
+<?php if ($seguimiento->fecha->Visible) { // fecha ?>
+	<tr id="r_fecha"<?php echo $seguimiento->RowAttributes() ?>>
+		<td><span id="elh_seguimiento_fecha"><?php echo $seguimiento->fecha->FldCaption() ?></span></td>
+		<td<?php echo $seguimiento->fecha->CellAttributes() ?>><span id="el_seguimiento_fecha" class="control-group">
+<input type="text" data-field="x_fecha" name="x_fecha" id="x_fecha" placeholder="<?php echo $seguimiento->fecha->PlaceHolder ?>" value="<?php echo $seguimiento->fecha->EditValue ?>"<?php echo $seguimiento->fecha->EditAttributes() ?>>
+</span><?php echo $seguimiento->fecha->CustomMsg ?></td>
 	</tr>
 <?php } ?>
-<?php if ($city->Province->Visible) { // Province ?>
-	<tr id="r_Province"<?php echo $city->RowAttributes() ?>>
-		<td><span id="elh_city_Province"><?php echo $city->Province->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></span></td>
-		<td<?php echo $city->Province->CellAttributes() ?>><span id="el_city_Province" class="control-group">
-<input type="text" data-field="x_Province" name="x_Province" id="x_Province" size="30" maxlength="32" placeholder="<?php echo $city->Province->PlaceHolder ?>" value="<?php echo $city->Province->EditValue ?>"<?php echo $city->Province->EditAttributes() ?>>
-</span><?php echo $city->Province->CustomMsg ?></td>
+<?php if ($seguimiento->hora->Visible) { // hora ?>
+	<tr id="r_hora"<?php echo $seguimiento->RowAttributes() ?>>
+		<td><span id="elh_seguimiento_hora"><?php echo $seguimiento->hora->FldCaption() ?></span></td>
+		<td<?php echo $seguimiento->hora->CellAttributes() ?>><span id="el_seguimiento_hora" class="control-group">
+<input type="text" data-field="x_hora" name="x_hora" id="x_hora" size="30" placeholder="<?php echo $seguimiento->hora->PlaceHolder ?>" value="<?php echo $seguimiento->hora->EditValue ?>"<?php echo $seguimiento->hora->EditAttributes() ?>>
+</span><?php echo $seguimiento->hora->CustomMsg ?></td>
+	</tr>
+<?php } ?>
+<?php if ($seguimiento->dependencia->Visible) { // dependencia ?>
+	<tr id="r_dependencia"<?php echo $seguimiento->RowAttributes() ?>>
+		<td><span id="elh_seguimiento_dependencia"><?php echo $seguimiento->dependencia->FldCaption() ?></span></td>
+		<td<?php echo $seguimiento->dependencia->CellAttributes() ?>><span id="el_seguimiento_dependencia" class="control-group">
+<input type="text" data-field="x_dependencia" name="x_dependencia" id="x_dependencia" size="30" maxlength="45" placeholder="<?php echo $seguimiento->dependencia->PlaceHolder ?>" value="<?php echo $seguimiento->dependencia->EditValue ?>"<?php echo $seguimiento->dependencia->EditAttributes() ?>>
+</span><?php echo $seguimiento->dependencia->CustomMsg ?></td>
 	</tr>
 <?php } ?>
 </table>
@@ -866,13 +857,13 @@ $city_add->ShowMessage();
 <button class="btn btn-primary ewButton" name="btnAction" id="btnAction" type="submit"><?php echo $Language->Phrase("AddBtn") ?></button>
 </form>
 <script type="text/javascript">
-fcityadd.Init();
+fseguimientoadd.Init();
 <?php if (EW_MOBILE_REFLOW && ew_IsMobile()) { ?>
 ew_Reflow();
 <?php } ?>
 </script>
 <?php
-$city_add->ShowPageFooter();
+$seguimiento_add->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
@@ -884,5 +875,5 @@ if (EW_DEBUG_ENABLED)
 </script>
 <?php include_once "footer.php" ?>
 <?php
-$city_add->Page_Terminate();
+$seguimiento_add->Page_Terminate();
 ?>

@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg10.php" ?>
 <?php include_once "ewmysql10.php" ?>
 <?php include_once "phpfn10.php" ?>
-<?php include_once "cityinfo.php" ?>
+<?php include_once "dependenciasinfo.php" ?>
 <?php include_once "usuariosinfo.php" ?>
 <?php include_once "userfn10.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$city_delete = NULL; // Initialize page object first
+$dependencias_delete = NULL; // Initialize page object first
 
-class ccity_delete extends ccity {
+class cdependencias_delete extends cdependencias {
 
 	// Page ID
 	var $PageID = 'delete';
@@ -25,10 +25,10 @@ class ccity_delete extends ccity {
 	var $ProjectID = "{D74DC9FA-763C-48C4-880F-6C317035A0C2}";
 
 	// Table name
-	var $TableName = 'city';
+	var $TableName = 'dependencias';
 
 	// Page object name
-	var $PageObjName = 'city_delete';
+	var $PageObjName = 'dependencias_delete';
 
 	// Page name
 	function PageName() {
@@ -171,10 +171,10 @@ class ccity_delete extends ccity {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (city)
-		if (!isset($GLOBALS["city"])) {
-			$GLOBALS["city"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["city"];
+		// Table object (dependencias)
+		if (!isset($GLOBALS["dependencias"])) {
+			$GLOBALS["dependencias"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["dependencias"];
 		}
 
 		// Table object (usuarios)
@@ -186,7 +186,7 @@ class ccity_delete extends ccity {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'city', TRUE);
+			define("EW_TABLE_NAME", 'dependencias', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"])) $GLOBALS["gTimer"] = new cTimer();
@@ -261,10 +261,10 @@ class ccity_delete extends ccity {
 		$this->RecKeys = $this->GetRecordKeys(); // Load record keys
 		$sFilter = $this->GetKeyFilter();
 		if ($sFilter == "")
-			$this->Page_Terminate("citylist.php"); // Prevent SQL injection, return to list
+			$this->Page_Terminate("dependenciaslist.php"); // Prevent SQL injection, return to list
 
 		// Set up filter (SQL WHHERE clause) and get return SQL
-		// SQL constructor in city class, cityinfo.php
+		// SQL constructor in dependencias class, dependenciasinfo.php
 
 		$this->CurrentFilter = $sFilter;
 
@@ -335,18 +335,22 @@ class ccity_delete extends ccity {
 		// Call Row Selected event
 		$row = &$rs->fields;
 		$this->Row_Selected($row);
-		$this->Name->setDbValue($rs->fields('Name'));
-		$this->Country->setDbValue($rs->fields('Country'));
-		$this->Province->setDbValue($rs->fields('Province'));
+		$this->codigodependencias->setDbValue($rs->fields('codigodependencias'));
+		$this->idsede->setDbValue($rs->fields('idsede'));
+		$this->nombre->setDbValue($rs->fields('nombre'));
+		$this->telefono->setDbValue($rs->fields('telefono'));
+		$this->direccion->setDbValue($rs->fields('direccion'));
 	}
 
 	// Load DbValue from recordset
 	function LoadDbValues(&$rs) {
 		if (!$rs || !is_array($rs) && $rs->EOF) return;
 		$row = is_array($rs) ? $rs : $rs->fields;
-		$this->Name->DbValue = $row['Name'];
-		$this->Country->DbValue = $row['Country'];
-		$this->Province->DbValue = $row['Province'];
+		$this->codigodependencias->DbValue = $row['codigodependencias'];
+		$this->idsede->DbValue = $row['idsede'];
+		$this->nombre->DbValue = $row['nombre'];
+		$this->telefono->DbValue = $row['telefono'];
+		$this->direccion->DbValue = $row['direccion'];
 	}
 
 	// Render row values based on field settings
@@ -360,38 +364,58 @@ class ccity_delete extends ccity {
 		$this->Row_Rendering();
 
 		// Common render codes for all row types
-		// Name
-		// Country
-		// Province
+		// codigodependencias
+		// idsede
+		// nombre
+		// telefono
+		// direccion
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
-			// Name
-			$this->Name->ViewValue = $this->Name->CurrentValue;
-			$this->Name->ViewCustomAttributes = "";
+			// codigodependencias
+			$this->codigodependencias->ViewValue = $this->codigodependencias->CurrentValue;
+			$this->codigodependencias->ViewCustomAttributes = "";
 
-			// Country
-			$this->Country->ViewValue = $this->Country->CurrentValue;
-			$this->Country->ViewCustomAttributes = "";
+			// idsede
+			$this->idsede->ViewValue = $this->idsede->CurrentValue;
+			$this->idsede->ViewCustomAttributes = "";
 
-			// Province
-			$this->Province->ViewValue = $this->Province->CurrentValue;
-			$this->Province->ViewCustomAttributes = "";
+			// nombre
+			$this->nombre->ViewValue = $this->nombre->CurrentValue;
+			$this->nombre->ViewCustomAttributes = "";
 
-			// Name
-			$this->Name->LinkCustomAttributes = "";
-			$this->Name->HrefValue = "";
-			$this->Name->TooltipValue = "";
+			// telefono
+			$this->telefono->ViewValue = $this->telefono->CurrentValue;
+			$this->telefono->ViewCustomAttributes = "";
 
-			// Country
-			$this->Country->LinkCustomAttributes = "";
-			$this->Country->HrefValue = "";
-			$this->Country->TooltipValue = "";
+			// direccion
+			$this->direccion->ViewValue = $this->direccion->CurrentValue;
+			$this->direccion->ViewCustomAttributes = "";
 
-			// Province
-			$this->Province->LinkCustomAttributes = "";
-			$this->Province->HrefValue = "";
-			$this->Province->TooltipValue = "";
+			// codigodependencias
+			$this->codigodependencias->LinkCustomAttributes = "";
+			$this->codigodependencias->HrefValue = "";
+			$this->codigodependencias->TooltipValue = "";
+
+			// idsede
+			$this->idsede->LinkCustomAttributes = "";
+			$this->idsede->HrefValue = "";
+			$this->idsede->TooltipValue = "";
+
+			// nombre
+			$this->nombre->LinkCustomAttributes = "";
+			$this->nombre->HrefValue = "";
+			$this->nombre->TooltipValue = "";
+
+			// telefono
+			$this->telefono->LinkCustomAttributes = "";
+			$this->telefono->HrefValue = "";
+			$this->telefono->TooltipValue = "";
+
+			// direccion
+			$this->direccion->LinkCustomAttributes = "";
+			$this->direccion->HrefValue = "";
+			$this->direccion->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -439,11 +463,7 @@ class ccity_delete extends ccity {
 			foreach ($rsold as $row) {
 				$sThisKey = "";
 				if ($sThisKey <> "") $sThisKey .= $GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"];
-				$sThisKey .= $row['Name'];
-				if ($sThisKey <> "") $sThisKey .= $GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"];
-				$sThisKey .= $row['Country'];
-				if ($sThisKey <> "") $sThisKey .= $GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"];
-				$sThisKey .= $row['Province'];
+				$sThisKey .= $row['codigodependencias'];
 				$conn->raiseErrorFn = 'ew_ErrorFn';
 				$DeleteRows = $this->Delete($row); // Delete
 				$conn->raiseErrorFn = '';
@@ -485,7 +505,7 @@ class ccity_delete extends ccity {
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new cBreadcrumb();
 		$PageCaption = $this->TableCaption();
-		$Breadcrumb->Add("list", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", "citylist.php", $this->TableVar);
+		$Breadcrumb->Add("list", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", "dependenciaslist.php", $this->TableVar);
 		$PageCaption = $Language->Phrase("delete");
 		$Breadcrumb->Add("delete", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", ew_CurrentUrl(), $this->TableVar);
 	}
@@ -555,33 +575,33 @@ class ccity_delete extends ccity {
 <?php
 
 // Create page object
-if (!isset($city_delete)) $city_delete = new ccity_delete();
+if (!isset($dependencias_delete)) $dependencias_delete = new cdependencias_delete();
 
 // Page init
-$city_delete->Page_Init();
+$dependencias_delete->Page_Init();
 
 // Page main
-$city_delete->Page_Main();
+$dependencias_delete->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$city_delete->Page_Render();
+$dependencias_delete->Page_Render();
 ?>
 <?php include_once "header.php" ?>
 <script type="text/javascript">
 
 // Page object
-var city_delete = new ew_Page("city_delete");
-city_delete.PageID = "delete"; // Page ID
-var EW_PAGE_ID = city_delete.PageID; // For backward compatibility
+var dependencias_delete = new ew_Page("dependencias_delete");
+dependencias_delete.PageID = "delete"; // Page ID
+var EW_PAGE_ID = dependencias_delete.PageID; // For backward compatibility
 
 // Form object
-var fcitydelete = new ew_Form("fcitydelete");
+var fdependenciasdelete = new ew_Form("fdependenciasdelete");
 
 // Form_CustomValidate event
-fcitydelete.Form_CustomValidate = 
+fdependenciasdelete.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid. 
@@ -590,9 +610,9 @@ fcitydelete.Form_CustomValidate =
 
 // Use JavaScript validation or not
 <?php if (EW_CLIENT_VALIDATE) { ?>
-fcitydelete.ValidateRequired = true;
+fdependenciasdelete.ValidateRequired = true;
 <?php } else { ?>
-fcitydelete.ValidateRequired = false; 
+fdependenciasdelete.ValidateRequired = false; 
 <?php } ?>
 
 // Dynamic selection lists
@@ -606,73 +626,83 @@ fcitydelete.ValidateRequired = false;
 <?php
 
 // Load records for display
-if ($city_delete->Recordset = $city_delete->LoadRecordset())
-	$city_deleteTotalRecs = $city_delete->Recordset->RecordCount(); // Get record count
-if ($city_deleteTotalRecs <= 0) { // No record found, exit
-	if ($city_delete->Recordset)
-		$city_delete->Recordset->Close();
-	$city_delete->Page_Terminate("citylist.php"); // Return to list
+if ($dependencias_delete->Recordset = $dependencias_delete->LoadRecordset())
+	$dependencias_deleteTotalRecs = $dependencias_delete->Recordset->RecordCount(); // Get record count
+if ($dependencias_deleteTotalRecs <= 0) { // No record found, exit
+	if ($dependencias_delete->Recordset)
+		$dependencias_delete->Recordset->Close();
+	$dependencias_delete->Page_Terminate("dependenciaslist.php"); // Return to list
 }
 ?>
 <?php $Breadcrumb->Render(); ?>
-<?php $city_delete->ShowPageHeader(); ?>
+<?php $dependencias_delete->ShowPageHeader(); ?>
 <?php
-$city_delete->ShowMessage();
+$dependencias_delete->ShowMessage();
 ?>
-<form name="fcitydelete" id="fcitydelete" class="ewForm form-horizontal" action="<?php echo ew_CurrentPage() ?>" method="post">
-<input type="hidden" name="t" value="city">
+<form name="fdependenciasdelete" id="fdependenciasdelete" class="ewForm form-horizontal" action="<?php echo ew_CurrentPage() ?>" method="post">
+<input type="hidden" name="t" value="dependencias">
 <input type="hidden" name="a_delete" id="a_delete" value="D">
-<?php foreach ($city_delete->RecKeys as $key) { ?>
+<?php foreach ($dependencias_delete->RecKeys as $key) { ?>
 <?php $keyvalue = is_array($key) ? implode($EW_COMPOSITE_KEY_SEPARATOR, $key) : $key; ?>
 <input type="hidden" name="key_m[]" value="<?php echo ew_HtmlEncode($keyvalue) ?>">
 <?php } ?>
 <table cellspacing="0" class="ewGrid"><tr><td class="ewGridContent">
 <div class="ewGridMiddlePanel">
-<table id="tbl_citydelete" class="ewTable ewTableSeparate">
-<?php echo $city->TableCustomInnerHtml ?>
+<table id="tbl_dependenciasdelete" class="ewTable ewTableSeparate">
+<?php echo $dependencias->TableCustomInnerHtml ?>
 	<thead>
 	<tr class="ewTableHeader">
-		<td><span id="elh_city_Name" class="city_Name"><?php echo $city->Name->FldCaption() ?></span></td>
-		<td><span id="elh_city_Country" class="city_Country"><?php echo $city->Country->FldCaption() ?></span></td>
-		<td><span id="elh_city_Province" class="city_Province"><?php echo $city->Province->FldCaption() ?></span></td>
+		<td><span id="elh_dependencias_codigodependencias" class="dependencias_codigodependencias"><?php echo $dependencias->codigodependencias->FldCaption() ?></span></td>
+		<td><span id="elh_dependencias_idsede" class="dependencias_idsede"><?php echo $dependencias->idsede->FldCaption() ?></span></td>
+		<td><span id="elh_dependencias_nombre" class="dependencias_nombre"><?php echo $dependencias->nombre->FldCaption() ?></span></td>
+		<td><span id="elh_dependencias_telefono" class="dependencias_telefono"><?php echo $dependencias->telefono->FldCaption() ?></span></td>
+		<td><span id="elh_dependencias_direccion" class="dependencias_direccion"><?php echo $dependencias->direccion->FldCaption() ?></span></td>
 	</tr>
 	</thead>
 	<tbody>
 <?php
-$city_delete->RecCnt = 0;
+$dependencias_delete->RecCnt = 0;
 $i = 0;
-while (!$city_delete->Recordset->EOF) {
-	$city_delete->RecCnt++;
-	$city_delete->RowCnt++;
+while (!$dependencias_delete->Recordset->EOF) {
+	$dependencias_delete->RecCnt++;
+	$dependencias_delete->RowCnt++;
 
 	// Set row properties
-	$city->ResetAttrs();
-	$city->RowType = EW_ROWTYPE_VIEW; // View
+	$dependencias->ResetAttrs();
+	$dependencias->RowType = EW_ROWTYPE_VIEW; // View
 
 	// Get the field contents
-	$city_delete->LoadRowValues($city_delete->Recordset);
+	$dependencias_delete->LoadRowValues($dependencias_delete->Recordset);
 
 	// Render row
-	$city_delete->RenderRow();
+	$dependencias_delete->RenderRow();
 ?>
-	<tr<?php echo $city->RowAttributes() ?>>
-		<td<?php echo $city->Name->CellAttributes() ?>><span id="el<?php echo $city_delete->RowCnt ?>_city_Name" class="control-group city_Name">
-<span<?php echo $city->Name->ViewAttributes() ?>>
-<?php echo $city->Name->ListViewValue() ?></span>
+	<tr<?php echo $dependencias->RowAttributes() ?>>
+		<td<?php echo $dependencias->codigodependencias->CellAttributes() ?>><span id="el<?php echo $dependencias_delete->RowCnt ?>_dependencias_codigodependencias" class="control-group dependencias_codigodependencias">
+<span<?php echo $dependencias->codigodependencias->ViewAttributes() ?>>
+<?php echo $dependencias->codigodependencias->ListViewValue() ?></span>
 </span></td>
-		<td<?php echo $city->Country->CellAttributes() ?>><span id="el<?php echo $city_delete->RowCnt ?>_city_Country" class="control-group city_Country">
-<span<?php echo $city->Country->ViewAttributes() ?>>
-<?php echo $city->Country->ListViewValue() ?></span>
+		<td<?php echo $dependencias->idsede->CellAttributes() ?>><span id="el<?php echo $dependencias_delete->RowCnt ?>_dependencias_idsede" class="control-group dependencias_idsede">
+<span<?php echo $dependencias->idsede->ViewAttributes() ?>>
+<?php echo $dependencias->idsede->ListViewValue() ?></span>
 </span></td>
-		<td<?php echo $city->Province->CellAttributes() ?>><span id="el<?php echo $city_delete->RowCnt ?>_city_Province" class="control-group city_Province">
-<span<?php echo $city->Province->ViewAttributes() ?>>
-<?php echo $city->Province->ListViewValue() ?></span>
+		<td<?php echo $dependencias->nombre->CellAttributes() ?>><span id="el<?php echo $dependencias_delete->RowCnt ?>_dependencias_nombre" class="control-group dependencias_nombre">
+<span<?php echo $dependencias->nombre->ViewAttributes() ?>>
+<?php echo $dependencias->nombre->ListViewValue() ?></span>
+</span></td>
+		<td<?php echo $dependencias->telefono->CellAttributes() ?>><span id="el<?php echo $dependencias_delete->RowCnt ?>_dependencias_telefono" class="control-group dependencias_telefono">
+<span<?php echo $dependencias->telefono->ViewAttributes() ?>>
+<?php echo $dependencias->telefono->ListViewValue() ?></span>
+</span></td>
+		<td<?php echo $dependencias->direccion->CellAttributes() ?>><span id="el<?php echo $dependencias_delete->RowCnt ?>_dependencias_direccion" class="control-group dependencias_direccion">
+<span<?php echo $dependencias->direccion->ViewAttributes() ?>>
+<?php echo $dependencias->direccion->ListViewValue() ?></span>
 </span></td>
 	</tr>
 <?php
-	$city_delete->Recordset->MoveNext();
+	$dependencias_delete->Recordset->MoveNext();
 }
-$city_delete->Recordset->Close();
+$dependencias_delete->Recordset->Close();
 ?>
 </tbody>
 </table>
@@ -683,10 +713,10 @@ $city_delete->Recordset->Close();
 </div>
 </form>
 <script type="text/javascript">
-fcitydelete.Init();
+fdependenciasdelete.Init();
 </script>
 <?php
-$city_delete->ShowPageFooter();
+$dependencias_delete->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
@@ -698,5 +728,5 @@ if (EW_DEBUG_ENABLED)
 </script>
 <?php include_once "footer.php" ?>
 <?php
-$city_delete->Page_Terminate();
+$dependencias_delete->Page_Terminate();
 ?>

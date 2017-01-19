@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg10.php" ?>
 <?php include_once "ewmysql10.php" ?>
 <?php include_once "phpfn10.php" ?>
-<?php include_once "cityinfo.php" ?>
+<?php include_once "countryinfo.php" ?>
 <?php include_once "usuariosinfo.php" ?>
 <?php include_once "userfn10.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$city_delete = NULL; // Initialize page object first
+$country_delete = NULL; // Initialize page object first
 
-class ccity_delete extends ccity {
+class ccountry_delete extends ccountry {
 
 	// Page ID
 	var $PageID = 'delete';
@@ -25,10 +25,10 @@ class ccity_delete extends ccity {
 	var $ProjectID = "{D74DC9FA-763C-48C4-880F-6C317035A0C2}";
 
 	// Table name
-	var $TableName = 'city';
+	var $TableName = 'country';
 
 	// Page object name
-	var $PageObjName = 'city_delete';
+	var $PageObjName = 'country_delete';
 
 	// Page name
 	function PageName() {
@@ -171,10 +171,10 @@ class ccity_delete extends ccity {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (city)
-		if (!isset($GLOBALS["city"])) {
-			$GLOBALS["city"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["city"];
+		// Table object (country)
+		if (!isset($GLOBALS["country"])) {
+			$GLOBALS["country"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["country"];
 		}
 
 		// Table object (usuarios)
@@ -186,7 +186,7 @@ class ccity_delete extends ccity {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'city', TRUE);
+			define("EW_TABLE_NAME", 'country', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"])) $GLOBALS["gTimer"] = new cTimer();
@@ -261,10 +261,10 @@ class ccity_delete extends ccity {
 		$this->RecKeys = $this->GetRecordKeys(); // Load record keys
 		$sFilter = $this->GetKeyFilter();
 		if ($sFilter == "")
-			$this->Page_Terminate("citylist.php"); // Prevent SQL injection, return to list
+			$this->Page_Terminate("countrylist.php"); // Prevent SQL injection, return to list
 
 		// Set up filter (SQL WHHERE clause) and get return SQL
-		// SQL constructor in city class, cityinfo.php
+		// SQL constructor in country class, countryinfo.php
 
 		$this->CurrentFilter = $sFilter;
 
@@ -336,7 +336,8 @@ class ccity_delete extends ccity {
 		$row = &$rs->fields;
 		$this->Row_Selected($row);
 		$this->Name->setDbValue($rs->fields('Name'));
-		$this->Country->setDbValue($rs->fields('Country'));
+		$this->Code->setDbValue($rs->fields('Code'));
+		$this->Capital->setDbValue($rs->fields('Capital'));
 		$this->Province->setDbValue($rs->fields('Province'));
 	}
 
@@ -345,7 +346,8 @@ class ccity_delete extends ccity {
 		if (!$rs || !is_array($rs) && $rs->EOF) return;
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->Name->DbValue = $row['Name'];
-		$this->Country->DbValue = $row['Country'];
+		$this->Code->DbValue = $row['Code'];
+		$this->Capital->DbValue = $row['Capital'];
 		$this->Province->DbValue = $row['Province'];
 	}
 
@@ -361,7 +363,8 @@ class ccity_delete extends ccity {
 
 		// Common render codes for all row types
 		// Name
-		// Country
+		// Code
+		// Capital
 		// Province
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
@@ -370,9 +373,13 @@ class ccity_delete extends ccity {
 			$this->Name->ViewValue = $this->Name->CurrentValue;
 			$this->Name->ViewCustomAttributes = "";
 
-			// Country
-			$this->Country->ViewValue = $this->Country->CurrentValue;
-			$this->Country->ViewCustomAttributes = "";
+			// Code
+			$this->Code->ViewValue = $this->Code->CurrentValue;
+			$this->Code->ViewCustomAttributes = "";
+
+			// Capital
+			$this->Capital->ViewValue = $this->Capital->CurrentValue;
+			$this->Capital->ViewCustomAttributes = "";
 
 			// Province
 			$this->Province->ViewValue = $this->Province->CurrentValue;
@@ -383,10 +390,15 @@ class ccity_delete extends ccity {
 			$this->Name->HrefValue = "";
 			$this->Name->TooltipValue = "";
 
-			// Country
-			$this->Country->LinkCustomAttributes = "";
-			$this->Country->HrefValue = "";
-			$this->Country->TooltipValue = "";
+			// Code
+			$this->Code->LinkCustomAttributes = "";
+			$this->Code->HrefValue = "";
+			$this->Code->TooltipValue = "";
+
+			// Capital
+			$this->Capital->LinkCustomAttributes = "";
+			$this->Capital->HrefValue = "";
+			$this->Capital->TooltipValue = "";
 
 			// Province
 			$this->Province->LinkCustomAttributes = "";
@@ -439,11 +451,7 @@ class ccity_delete extends ccity {
 			foreach ($rsold as $row) {
 				$sThisKey = "";
 				if ($sThisKey <> "") $sThisKey .= $GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"];
-				$sThisKey .= $row['Name'];
-				if ($sThisKey <> "") $sThisKey .= $GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"];
-				$sThisKey .= $row['Country'];
-				if ($sThisKey <> "") $sThisKey .= $GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"];
-				$sThisKey .= $row['Province'];
+				$sThisKey .= $row['Code'];
 				$conn->raiseErrorFn = 'ew_ErrorFn';
 				$DeleteRows = $this->Delete($row); // Delete
 				$conn->raiseErrorFn = '';
@@ -485,7 +493,7 @@ class ccity_delete extends ccity {
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new cBreadcrumb();
 		$PageCaption = $this->TableCaption();
-		$Breadcrumb->Add("list", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", "citylist.php", $this->TableVar);
+		$Breadcrumb->Add("list", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", "countrylist.php", $this->TableVar);
 		$PageCaption = $Language->Phrase("delete");
 		$Breadcrumb->Add("delete", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", ew_CurrentUrl(), $this->TableVar);
 	}
@@ -555,33 +563,33 @@ class ccity_delete extends ccity {
 <?php
 
 // Create page object
-if (!isset($city_delete)) $city_delete = new ccity_delete();
+if (!isset($country_delete)) $country_delete = new ccountry_delete();
 
 // Page init
-$city_delete->Page_Init();
+$country_delete->Page_Init();
 
 // Page main
-$city_delete->Page_Main();
+$country_delete->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$city_delete->Page_Render();
+$country_delete->Page_Render();
 ?>
 <?php include_once "header.php" ?>
 <script type="text/javascript">
 
 // Page object
-var city_delete = new ew_Page("city_delete");
-city_delete.PageID = "delete"; // Page ID
-var EW_PAGE_ID = city_delete.PageID; // For backward compatibility
+var country_delete = new ew_Page("country_delete");
+country_delete.PageID = "delete"; // Page ID
+var EW_PAGE_ID = country_delete.PageID; // For backward compatibility
 
 // Form object
-var fcitydelete = new ew_Form("fcitydelete");
+var fcountrydelete = new ew_Form("fcountrydelete");
 
 // Form_CustomValidate event
-fcitydelete.Form_CustomValidate = 
+fcountrydelete.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid. 
@@ -590,9 +598,9 @@ fcitydelete.Form_CustomValidate =
 
 // Use JavaScript validation or not
 <?php if (EW_CLIENT_VALIDATE) { ?>
-fcitydelete.ValidateRequired = true;
+fcountrydelete.ValidateRequired = true;
 <?php } else { ?>
-fcitydelete.ValidateRequired = false; 
+fcountrydelete.ValidateRequired = false; 
 <?php } ?>
 
 // Dynamic selection lists
@@ -606,73 +614,78 @@ fcitydelete.ValidateRequired = false;
 <?php
 
 // Load records for display
-if ($city_delete->Recordset = $city_delete->LoadRecordset())
-	$city_deleteTotalRecs = $city_delete->Recordset->RecordCount(); // Get record count
-if ($city_deleteTotalRecs <= 0) { // No record found, exit
-	if ($city_delete->Recordset)
-		$city_delete->Recordset->Close();
-	$city_delete->Page_Terminate("citylist.php"); // Return to list
+if ($country_delete->Recordset = $country_delete->LoadRecordset())
+	$country_deleteTotalRecs = $country_delete->Recordset->RecordCount(); // Get record count
+if ($country_deleteTotalRecs <= 0) { // No record found, exit
+	if ($country_delete->Recordset)
+		$country_delete->Recordset->Close();
+	$country_delete->Page_Terminate("countrylist.php"); // Return to list
 }
 ?>
 <?php $Breadcrumb->Render(); ?>
-<?php $city_delete->ShowPageHeader(); ?>
+<?php $country_delete->ShowPageHeader(); ?>
 <?php
-$city_delete->ShowMessage();
+$country_delete->ShowMessage();
 ?>
-<form name="fcitydelete" id="fcitydelete" class="ewForm form-horizontal" action="<?php echo ew_CurrentPage() ?>" method="post">
-<input type="hidden" name="t" value="city">
+<form name="fcountrydelete" id="fcountrydelete" class="ewForm form-horizontal" action="<?php echo ew_CurrentPage() ?>" method="post">
+<input type="hidden" name="t" value="country">
 <input type="hidden" name="a_delete" id="a_delete" value="D">
-<?php foreach ($city_delete->RecKeys as $key) { ?>
+<?php foreach ($country_delete->RecKeys as $key) { ?>
 <?php $keyvalue = is_array($key) ? implode($EW_COMPOSITE_KEY_SEPARATOR, $key) : $key; ?>
 <input type="hidden" name="key_m[]" value="<?php echo ew_HtmlEncode($keyvalue) ?>">
 <?php } ?>
 <table cellspacing="0" class="ewGrid"><tr><td class="ewGridContent">
 <div class="ewGridMiddlePanel">
-<table id="tbl_citydelete" class="ewTable ewTableSeparate">
-<?php echo $city->TableCustomInnerHtml ?>
+<table id="tbl_countrydelete" class="ewTable ewTableSeparate">
+<?php echo $country->TableCustomInnerHtml ?>
 	<thead>
 	<tr class="ewTableHeader">
-		<td><span id="elh_city_Name" class="city_Name"><?php echo $city->Name->FldCaption() ?></span></td>
-		<td><span id="elh_city_Country" class="city_Country"><?php echo $city->Country->FldCaption() ?></span></td>
-		<td><span id="elh_city_Province" class="city_Province"><?php echo $city->Province->FldCaption() ?></span></td>
+		<td><span id="elh_country_Name" class="country_Name"><?php echo $country->Name->FldCaption() ?></span></td>
+		<td><span id="elh_country_Code" class="country_Code"><?php echo $country->Code->FldCaption() ?></span></td>
+		<td><span id="elh_country_Capital" class="country_Capital"><?php echo $country->Capital->FldCaption() ?></span></td>
+		<td><span id="elh_country_Province" class="country_Province"><?php echo $country->Province->FldCaption() ?></span></td>
 	</tr>
 	</thead>
 	<tbody>
 <?php
-$city_delete->RecCnt = 0;
+$country_delete->RecCnt = 0;
 $i = 0;
-while (!$city_delete->Recordset->EOF) {
-	$city_delete->RecCnt++;
-	$city_delete->RowCnt++;
+while (!$country_delete->Recordset->EOF) {
+	$country_delete->RecCnt++;
+	$country_delete->RowCnt++;
 
 	// Set row properties
-	$city->ResetAttrs();
-	$city->RowType = EW_ROWTYPE_VIEW; // View
+	$country->ResetAttrs();
+	$country->RowType = EW_ROWTYPE_VIEW; // View
 
 	// Get the field contents
-	$city_delete->LoadRowValues($city_delete->Recordset);
+	$country_delete->LoadRowValues($country_delete->Recordset);
 
 	// Render row
-	$city_delete->RenderRow();
+	$country_delete->RenderRow();
 ?>
-	<tr<?php echo $city->RowAttributes() ?>>
-		<td<?php echo $city->Name->CellAttributes() ?>><span id="el<?php echo $city_delete->RowCnt ?>_city_Name" class="control-group city_Name">
-<span<?php echo $city->Name->ViewAttributes() ?>>
-<?php echo $city->Name->ListViewValue() ?></span>
+	<tr<?php echo $country->RowAttributes() ?>>
+		<td<?php echo $country->Name->CellAttributes() ?>><span id="el<?php echo $country_delete->RowCnt ?>_country_Name" class="control-group country_Name">
+<span<?php echo $country->Name->ViewAttributes() ?>>
+<?php echo $country->Name->ListViewValue() ?></span>
 </span></td>
-		<td<?php echo $city->Country->CellAttributes() ?>><span id="el<?php echo $city_delete->RowCnt ?>_city_Country" class="control-group city_Country">
-<span<?php echo $city->Country->ViewAttributes() ?>>
-<?php echo $city->Country->ListViewValue() ?></span>
+		<td<?php echo $country->Code->CellAttributes() ?>><span id="el<?php echo $country_delete->RowCnt ?>_country_Code" class="control-group country_Code">
+<span<?php echo $country->Code->ViewAttributes() ?>>
+<?php echo $country->Code->ListViewValue() ?></span>
 </span></td>
-		<td<?php echo $city->Province->CellAttributes() ?>><span id="el<?php echo $city_delete->RowCnt ?>_city_Province" class="control-group city_Province">
-<span<?php echo $city->Province->ViewAttributes() ?>>
-<?php echo $city->Province->ListViewValue() ?></span>
+		<td<?php echo $country->Capital->CellAttributes() ?>><span id="el<?php echo $country_delete->RowCnt ?>_country_Capital" class="control-group country_Capital">
+<span<?php echo $country->Capital->ViewAttributes() ?>>
+<?php echo $country->Capital->ListViewValue() ?></span>
+</span></td>
+		<td<?php echo $country->Province->CellAttributes() ?>><span id="el<?php echo $country_delete->RowCnt ?>_country_Province" class="control-group country_Province">
+<span<?php echo $country->Province->ViewAttributes() ?>>
+<?php echo $country->Province->ListViewValue() ?></span>
 </span></td>
 	</tr>
 <?php
-	$city_delete->Recordset->MoveNext();
+	$country_delete->Recordset->MoveNext();
 }
-$city_delete->Recordset->Close();
+$country_delete->Recordset->Close();
 ?>
 </tbody>
 </table>
@@ -683,10 +696,10 @@ $city_delete->Recordset->Close();
 </div>
 </form>
 <script type="text/javascript">
-fcitydelete.Init();
+fcountrydelete.Init();
 </script>
 <?php
-$city_delete->ShowPageFooter();
+$country_delete->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
@@ -698,5 +711,5 @@ if (EW_DEBUG_ENABLED)
 </script>
 <?php include_once "footer.php" ?>
 <?php
-$city_delete->Page_Terminate();
+$country_delete->Page_Terminate();
 ?>

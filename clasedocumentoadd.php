@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg10.php" ?>
 <?php include_once "ewmysql10.php" ?>
 <?php include_once "phpfn10.php" ?>
-<?php include_once "cityinfo.php" ?>
+<?php include_once "clasedocumentoinfo.php" ?>
 <?php include_once "usuariosinfo.php" ?>
 <?php include_once "userfn10.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$city_add = NULL; // Initialize page object first
+$clasedocumento_add = NULL; // Initialize page object first
 
-class ccity_add extends ccity {
+class cclasedocumento_add extends cclasedocumento {
 
 	// Page ID
 	var $PageID = 'add';
@@ -25,10 +25,10 @@ class ccity_add extends ccity {
 	var $ProjectID = "{D74DC9FA-763C-48C4-880F-6C317035A0C2}";
 
 	// Table name
-	var $TableName = 'city';
+	var $TableName = 'clasedocumento';
 
 	// Page object name
-	var $PageObjName = 'city_add';
+	var $PageObjName = 'clasedocumento_add';
 
 	// Page name
 	function PageName() {
@@ -171,10 +171,10 @@ class ccity_add extends ccity {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (city)
-		if (!isset($GLOBALS["city"])) {
-			$GLOBALS["city"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["city"];
+		// Table object (clasedocumento)
+		if (!isset($GLOBALS["clasedocumento"])) {
+			$GLOBALS["clasedocumento"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["clasedocumento"];
 		}
 
 		// Table object (usuarios)
@@ -186,7 +186,7 @@ class ccity_add extends ccity {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'city', TRUE);
+			define("EW_TABLE_NAME", 'clasedocumento', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"])) $GLOBALS["gTimer"] = new cTimer();
@@ -265,25 +265,11 @@ class ccity_add extends ccity {
 
 			// Load key values from QueryString
 			$this->CopyRecord = TRUE;
-			if (@$_GET["Name"] != "") {
-				$this->Name->setQueryStringValue($_GET["Name"]);
-				$this->setKey("Name", $this->Name->CurrentValue); // Set up key
+			if (@$_GET["id"] != "") {
+				$this->id->setQueryStringValue($_GET["id"]);
+				$this->setKey("id", $this->id->CurrentValue); // Set up key
 			} else {
-				$this->setKey("Name", ""); // Clear key
-				$this->CopyRecord = FALSE;
-			}
-			if (@$_GET["Country"] != "") {
-				$this->Country->setQueryStringValue($_GET["Country"]);
-				$this->setKey("Country", $this->Country->CurrentValue); // Set up key
-			} else {
-				$this->setKey("Country", ""); // Clear key
-				$this->CopyRecord = FALSE;
-			}
-			if (@$_GET["Province"] != "") {
-				$this->Province->setQueryStringValue($_GET["Province"]);
-				$this->setKey("Province", $this->Province->CurrentValue); // Set up key
-			} else {
-				$this->setKey("Province", ""); // Clear key
+				$this->setKey("id", ""); // Clear key
 				$this->CopyRecord = FALSE;
 			}
 			if ($this->CopyRecord) {
@@ -314,7 +300,7 @@ class ccity_add extends ccity {
 			case "C": // Copy an existing record
 				if (!$this->LoadRow()) { // Load record based on key
 					if ($this->getFailureMessage() == "") $this->setFailureMessage($Language->Phrase("NoRecord")); // No record found
-					$this->Page_Terminate("citylist.php"); // No matching record, return to list
+					$this->Page_Terminate("clasedocumentolist.php"); // No matching record, return to list
 				}
 				break;
 			case "A": // Add new record
@@ -323,7 +309,7 @@ class ccity_add extends ccity {
 					if ($this->getSuccessMessage() == "")
 						$this->setSuccessMessage($Language->Phrase("AddSuccess")); // Set up success message
 					$sReturnUrl = $this->getReturnUrl();
-					if (ew_GetPageName($sReturnUrl) == "cityview.php")
+					if (ew_GetPageName($sReturnUrl) == "clasedocumentoview.php")
 						$sReturnUrl = $this->GetViewUrl(); // View paging, return to view page with keyurl directly
 					$this->Page_Terminate($sReturnUrl); // Clean up and return
 				} else {
@@ -349,12 +335,8 @@ class ccity_add extends ccity {
 
 	// Load default values
 	function LoadDefaultValues() {
-		$this->Name->CurrentValue = NULL;
-		$this->Name->OldValue = $this->Name->CurrentValue;
-		$this->Country->CurrentValue = NULL;
-		$this->Country->OldValue = $this->Country->CurrentValue;
-		$this->Province->CurrentValue = NULL;
-		$this->Province->OldValue = $this->Province->CurrentValue;
+		$this->nombre->CurrentValue = NULL;
+		$this->nombre->OldValue = $this->nombre->CurrentValue;
 	}
 
 	// Load form values
@@ -362,14 +344,8 @@ class ccity_add extends ccity {
 
 		// Load from form
 		global $objForm;
-		if (!$this->Name->FldIsDetailKey) {
-			$this->Name->setFormValue($objForm->GetValue("x_Name"));
-		}
-		if (!$this->Country->FldIsDetailKey) {
-			$this->Country->setFormValue($objForm->GetValue("x_Country"));
-		}
-		if (!$this->Province->FldIsDetailKey) {
-			$this->Province->setFormValue($objForm->GetValue("x_Province"));
+		if (!$this->nombre->FldIsDetailKey) {
+			$this->nombre->setFormValue($objForm->GetValue("x_nombre"));
 		}
 	}
 
@@ -377,9 +353,7 @@ class ccity_add extends ccity {
 	function RestoreFormValues() {
 		global $objForm;
 		$this->LoadOldRecord();
-		$this->Name->CurrentValue = $this->Name->FormValue;
-		$this->Country->CurrentValue = $this->Country->FormValue;
-		$this->Province->CurrentValue = $this->Province->FormValue;
+		$this->nombre->CurrentValue = $this->nombre->FormValue;
 	}
 
 	// Load row based on key values
@@ -411,18 +385,16 @@ class ccity_add extends ccity {
 		// Call Row Selected event
 		$row = &$rs->fields;
 		$this->Row_Selected($row);
-		$this->Name->setDbValue($rs->fields('Name'));
-		$this->Country->setDbValue($rs->fields('Country'));
-		$this->Province->setDbValue($rs->fields('Province'));
+		$this->id->setDbValue($rs->fields('id'));
+		$this->nombre->setDbValue($rs->fields('nombre'));
 	}
 
 	// Load DbValue from recordset
 	function LoadDbValues(&$rs) {
 		if (!$rs || !is_array($rs) && $rs->EOF) return;
 		$row = is_array($rs) ? $rs : $rs->fields;
-		$this->Name->DbValue = $row['Name'];
-		$this->Country->DbValue = $row['Country'];
-		$this->Province->DbValue = $row['Province'];
+		$this->id->DbValue = $row['id'];
+		$this->nombre->DbValue = $row['nombre'];
 	}
 
 	// Load old record
@@ -430,16 +402,8 @@ class ccity_add extends ccity {
 
 		// Load key values from Session
 		$bValidKey = TRUE;
-		if (strval($this->getKey("Name")) <> "")
-			$this->Name->CurrentValue = $this->getKey("Name"); // Name
-		else
-			$bValidKey = FALSE;
-		if (strval($this->getKey("Country")) <> "")
-			$this->Country->CurrentValue = $this->getKey("Country"); // Country
-		else
-			$bValidKey = FALSE;
-		if (strval($this->getKey("Province")) <> "")
-			$this->Province->CurrentValue = $this->getKey("Province"); // Province
+		if (strval($this->getKey("id")) <> "")
+			$this->id->CurrentValue = $this->getKey("id"); // id
 		else
 			$bValidKey = FALSE;
 
@@ -466,65 +430,34 @@ class ccity_add extends ccity {
 		$this->Row_Rendering();
 
 		// Common render codes for all row types
-		// Name
-		// Country
-		// Province
+		// id
+		// nombre
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
-			// Name
-			$this->Name->ViewValue = $this->Name->CurrentValue;
-			$this->Name->ViewCustomAttributes = "";
+			// id
+			$this->id->ViewValue = $this->id->CurrentValue;
+			$this->id->ViewCustomAttributes = "";
 
-			// Country
-			$this->Country->ViewValue = $this->Country->CurrentValue;
-			$this->Country->ViewCustomAttributes = "";
+			// nombre
+			$this->nombre->ViewValue = $this->nombre->CurrentValue;
+			$this->nombre->ViewCustomAttributes = "";
 
-			// Province
-			$this->Province->ViewValue = $this->Province->CurrentValue;
-			$this->Province->ViewCustomAttributes = "";
-
-			// Name
-			$this->Name->LinkCustomAttributes = "";
-			$this->Name->HrefValue = "";
-			$this->Name->TooltipValue = "";
-
-			// Country
-			$this->Country->LinkCustomAttributes = "";
-			$this->Country->HrefValue = "";
-			$this->Country->TooltipValue = "";
-
-			// Province
-			$this->Province->LinkCustomAttributes = "";
-			$this->Province->HrefValue = "";
-			$this->Province->TooltipValue = "";
+			// nombre
+			$this->nombre->LinkCustomAttributes = "";
+			$this->nombre->HrefValue = "";
+			$this->nombre->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_ADD) { // Add row
 
-			// Name
-			$this->Name->EditCustomAttributes = "";
-			$this->Name->EditValue = ew_HtmlEncode($this->Name->CurrentValue);
-			$this->Name->PlaceHolder = ew_HtmlEncode(ew_RemoveHtml($this->Name->FldCaption()));
-
-			// Country
-			$this->Country->EditCustomAttributes = "";
-			$this->Country->EditValue = ew_HtmlEncode($this->Country->CurrentValue);
-			$this->Country->PlaceHolder = ew_HtmlEncode(ew_RemoveHtml($this->Country->FldCaption()));
-
-			// Province
-			$this->Province->EditCustomAttributes = "";
-			$this->Province->EditValue = ew_HtmlEncode($this->Province->CurrentValue);
-			$this->Province->PlaceHolder = ew_HtmlEncode(ew_RemoveHtml($this->Province->FldCaption()));
+			// nombre
+			$this->nombre->EditCustomAttributes = "";
+			$this->nombre->EditValue = ew_HtmlEncode($this->nombre->CurrentValue);
+			$this->nombre->PlaceHolder = ew_HtmlEncode(ew_RemoveHtml($this->nombre->FldCaption()));
 
 			// Edit refer script
-			// Name
+			// nombre
 
-			$this->Name->HrefValue = "";
-
-			// Country
-			$this->Country->HrefValue = "";
-
-			// Province
-			$this->Province->HrefValue = "";
+			$this->nombre->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD ||
 			$this->RowType == EW_ROWTYPE_EDIT ||
@@ -547,15 +480,6 @@ class ccity_add extends ccity {
 		// Check if validation required
 		if (!EW_SERVER_VALIDATE)
 			return ($gsFormError == "");
-		if (!$this->Name->FldIsDetailKey && !is_null($this->Name->FormValue) && $this->Name->FormValue == "") {
-			ew_AddMessage($gsFormError, $Language->Phrase("EnterRequiredField") . " - " . $this->Name->FldCaption());
-		}
-		if (!$this->Country->FldIsDetailKey && !is_null($this->Country->FormValue) && $this->Country->FormValue == "") {
-			ew_AddMessage($gsFormError, $Language->Phrase("EnterRequiredField") . " - " . $this->Country->FldCaption());
-		}
-		if (!$this->Province->FldIsDetailKey && !is_null($this->Province->FormValue) && $this->Province->FormValue == "") {
-			ew_AddMessage($gsFormError, $Language->Phrase("EnterRequiredField") . " - " . $this->Province->FldCaption());
-		}
 
 		// Return validate result
 		$ValidateForm = ($gsFormError == "");
@@ -579,48 +503,12 @@ class ccity_add extends ccity {
 		}
 		$rsnew = array();
 
-		// Name
-		$this->Name->SetDbValueDef($rsnew, $this->Name->CurrentValue, "", FALSE);
-
-		// Country
-		$this->Country->SetDbValueDef($rsnew, $this->Country->CurrentValue, "", FALSE);
-
-		// Province
-		$this->Province->SetDbValueDef($rsnew, $this->Province->CurrentValue, "", FALSE);
+		// nombre
+		$this->nombre->SetDbValueDef($rsnew, $this->nombre->CurrentValue, NULL, FALSE);
 
 		// Call Row Inserting event
 		$rs = ($rsold == NULL) ? NULL : $rsold->fields;
 		$bInsertRow = $this->Row_Inserting($rs, $rsnew);
-
-		// Check if key value entered
-		if ($bInsertRow && $this->ValidateKey && $this->Name->CurrentValue == "" && $this->Name->getSessionValue() == "") {
-			$this->setFailureMessage($Language->Phrase("InvalidKeyValue"));
-			$bInsertRow = FALSE;
-		}
-
-		// Check if key value entered
-		if ($bInsertRow && $this->ValidateKey && $this->Country->CurrentValue == "" && $this->Country->getSessionValue() == "") {
-			$this->setFailureMessage($Language->Phrase("InvalidKeyValue"));
-			$bInsertRow = FALSE;
-		}
-
-		// Check if key value entered
-		if ($bInsertRow && $this->ValidateKey && $this->Province->CurrentValue == "" && $this->Province->getSessionValue() == "") {
-			$this->setFailureMessage($Language->Phrase("InvalidKeyValue"));
-			$bInsertRow = FALSE;
-		}
-
-		// Check for duplicate key
-		if ($bInsertRow && $this->ValidateKey) {
-			$sFilter = $this->KeyFilter();
-			$rsChk = $this->LoadRs($sFilter);
-			if ($rsChk && !$rsChk->EOF) {
-				$sKeyErrMsg = str_replace("%f", $sFilter, $Language->Phrase("DupKey"));
-				$this->setFailureMessage($sKeyErrMsg);
-				$rsChk->Close();
-				$bInsertRow = FALSE;
-			}
-		}
 		if ($bInsertRow) {
 			$conn->raiseErrorFn = 'ew_ErrorFn';
 			$AddRow = $this->Insert($rsnew);
@@ -642,6 +530,8 @@ class ccity_add extends ccity {
 
 		// Get insert id if necessary
 		if ($AddRow) {
+			$this->id->setDbValue($conn->Insert_ID());
+			$rsnew['id'] = $this->id->DbValue;
 		}
 		if ($AddRow) {
 
@@ -657,7 +547,7 @@ class ccity_add extends ccity {
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new cBreadcrumb();
 		$PageCaption = $this->TableCaption();
-		$Breadcrumb->Add("list", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", "citylist.php", $this->TableVar);
+		$Breadcrumb->Add("list", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", "clasedocumentolist.php", $this->TableVar);
 		$PageCaption = ($this->CurrentAction == "C") ? $Language->Phrase("Copy") : $Language->Phrase("Add");
 		$Breadcrumb->Add("add", "<span id=\"ewPageCaption\">" . $PageCaption . "</span>", ew_CurrentUrl(), $this->TableVar);
 	}
@@ -734,33 +624,33 @@ class ccity_add extends ccity {
 <?php
 
 // Create page object
-if (!isset($city_add)) $city_add = new ccity_add();
+if (!isset($clasedocumento_add)) $clasedocumento_add = new cclasedocumento_add();
 
 // Page init
-$city_add->Page_Init();
+$clasedocumento_add->Page_Init();
 
 // Page main
-$city_add->Page_Main();
+$clasedocumento_add->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$city_add->Page_Render();
+$clasedocumento_add->Page_Render();
 ?>
 <?php include_once "header.php" ?>
 <script type="text/javascript">
 
 // Page object
-var city_add = new ew_Page("city_add");
-city_add.PageID = "add"; // Page ID
-var EW_PAGE_ID = city_add.PageID; // For backward compatibility
+var clasedocumento_add = new ew_Page("clasedocumento_add");
+clasedocumento_add.PageID = "add"; // Page ID
+var EW_PAGE_ID = clasedocumento_add.PageID; // For backward compatibility
 
 // Form object
-var fcityadd = new ew_Form("fcityadd");
+var fclasedocumentoadd = new ew_Form("fclasedocumentoadd");
 
 // Validate form
-fcityadd.Validate = function() {
+fclasedocumentoadd.Validate = function() {
 	if (!this.ValidateRequired)
 		return true; // Ignore validation
 	var $ = jQuery, fobj = this.GetForm(), $fobj = $(fobj);
@@ -775,15 +665,6 @@ fcityadd.Validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
-			elm = this.GetElements("x" + infix + "_Name");
-			if (elm && !ew_HasValue(elm))
-				return this.OnError(elm, ewLanguage.Phrase("EnterRequiredField") + " - <?php echo ew_JsEncode2($city->Name->FldCaption()) ?>");
-			elm = this.GetElements("x" + infix + "_Country");
-			if (elm && !ew_HasValue(elm))
-				return this.OnError(elm, ewLanguage.Phrase("EnterRequiredField") + " - <?php echo ew_JsEncode2($city->Country->FldCaption()) ?>");
-			elm = this.GetElements("x" + infix + "_Province");
-			if (elm && !ew_HasValue(elm))
-				return this.OnError(elm, ewLanguage.Phrase("EnterRequiredField") + " - <?php echo ew_JsEncode2($city->Province->FldCaption()) ?>");
 
 			// Set up row object
 			ew_ElementsToRow(fobj);
@@ -805,7 +686,7 @@ fcityadd.Validate = function() {
 }
 
 // Form_CustomValidate event
-fcityadd.Form_CustomValidate = 
+fclasedocumentoadd.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid. 
@@ -814,9 +695,9 @@ fcityadd.Form_CustomValidate =
 
 // Use JavaScript validation or not
 <?php if (EW_CLIENT_VALIDATE) { ?>
-fcityadd.ValidateRequired = true;
+fclasedocumentoadd.ValidateRequired = true;
 <?php } else { ?>
-fcityadd.ValidateRequired = false; 
+fclasedocumentoadd.ValidateRequired = false; 
 <?php } ?>
 
 // Dynamic selection lists
@@ -828,37 +709,21 @@ fcityadd.ValidateRequired = false;
 // Write your client script here, no need to add script tags.
 </script>
 <?php $Breadcrumb->Render(); ?>
-<?php $city_add->ShowPageHeader(); ?>
+<?php $clasedocumento_add->ShowPageHeader(); ?>
 <?php
-$city_add->ShowMessage();
+$clasedocumento_add->ShowMessage();
 ?>
-<form name="fcityadd" id="fcityadd" class="ewForm form-horizontal" action="<?php echo ew_CurrentPage() ?>" method="post">
-<input type="hidden" name="t" value="city">
+<form name="fclasedocumentoadd" id="fclasedocumentoadd" class="ewForm form-horizontal" action="<?php echo ew_CurrentPage() ?>" method="post">
+<input type="hidden" name="t" value="clasedocumento">
 <input type="hidden" name="a_add" id="a_add" value="A">
 <table cellspacing="0" class="ewGrid"><tr><td>
-<table id="tbl_cityadd" class="table table-bordered table-striped">
-<?php if ($city->Name->Visible) { // Name ?>
-	<tr id="r_Name"<?php echo $city->RowAttributes() ?>>
-		<td><span id="elh_city_Name"><?php echo $city->Name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></span></td>
-		<td<?php echo $city->Name->CellAttributes() ?>><span id="el_city_Name" class="control-group">
-<input type="text" data-field="x_Name" name="x_Name" id="x_Name" size="30" maxlength="35" placeholder="<?php echo $city->Name->PlaceHolder ?>" value="<?php echo $city->Name->EditValue ?>"<?php echo $city->Name->EditAttributes() ?>>
-</span><?php echo $city->Name->CustomMsg ?></td>
-	</tr>
-<?php } ?>
-<?php if ($city->Country->Visible) { // Country ?>
-	<tr id="r_Country"<?php echo $city->RowAttributes() ?>>
-		<td><span id="elh_city_Country"><?php echo $city->Country->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></span></td>
-		<td<?php echo $city->Country->CellAttributes() ?>><span id="el_city_Country" class="control-group">
-<input type="text" data-field="x_Country" name="x_Country" id="x_Country" size="30" maxlength="4" placeholder="<?php echo $city->Country->PlaceHolder ?>" value="<?php echo $city->Country->EditValue ?>"<?php echo $city->Country->EditAttributes() ?>>
-</span><?php echo $city->Country->CustomMsg ?></td>
-	</tr>
-<?php } ?>
-<?php if ($city->Province->Visible) { // Province ?>
-	<tr id="r_Province"<?php echo $city->RowAttributes() ?>>
-		<td><span id="elh_city_Province"><?php echo $city->Province->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></span></td>
-		<td<?php echo $city->Province->CellAttributes() ?>><span id="el_city_Province" class="control-group">
-<input type="text" data-field="x_Province" name="x_Province" id="x_Province" size="30" maxlength="32" placeholder="<?php echo $city->Province->PlaceHolder ?>" value="<?php echo $city->Province->EditValue ?>"<?php echo $city->Province->EditAttributes() ?>>
-</span><?php echo $city->Province->CustomMsg ?></td>
+<table id="tbl_clasedocumentoadd" class="table table-bordered table-striped">
+<?php if ($clasedocumento->nombre->Visible) { // nombre ?>
+	<tr id="r_nombre"<?php echo $clasedocumento->RowAttributes() ?>>
+		<td><span id="elh_clasedocumento_nombre"><?php echo $clasedocumento->nombre->FldCaption() ?></span></td>
+		<td<?php echo $clasedocumento->nombre->CellAttributes() ?>><span id="el_clasedocumento_nombre" class="control-group">
+<input type="text" data-field="x_nombre" name="x_nombre" id="x_nombre" size="30" maxlength="45" placeholder="<?php echo $clasedocumento->nombre->PlaceHolder ?>" value="<?php echo $clasedocumento->nombre->EditValue ?>"<?php echo $clasedocumento->nombre->EditAttributes() ?>>
+</span><?php echo $clasedocumento->nombre->CustomMsg ?></td>
 	</tr>
 <?php } ?>
 </table>
@@ -866,13 +731,13 @@ $city_add->ShowMessage();
 <button class="btn btn-primary ewButton" name="btnAction" id="btnAction" type="submit"><?php echo $Language->Phrase("AddBtn") ?></button>
 </form>
 <script type="text/javascript">
-fcityadd.Init();
+fclasedocumentoadd.Init();
 <?php if (EW_MOBILE_REFLOW && ew_IsMobile()) { ?>
 ew_Reflow();
 <?php } ?>
 </script>
 <?php
-$city_add->ShowPageFooter();
+$clasedocumento_add->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
@@ -884,5 +749,5 @@ if (EW_DEBUG_ENABLED)
 </script>
 <?php include_once "footer.php" ?>
 <?php
-$city_add->Page_Terminate();
+$clasedocumento_add->Page_Terminate();
 ?>
